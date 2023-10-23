@@ -78,11 +78,30 @@ function App() {
     /** STEP 2) PROVIDE VALUES TO THE CHILD COMPONENTS 📦
      * To do that we specify value prop to the component
      * Then within that we define an object
-     * So we here we need an object which will contain
+     * So in here we need an object which will contain
      * all the data that we want to make accessible to the child component
+     * which are similar to props and values we pass in but here
+     * it will be in key value pairs, that's the only difference
+     *
+     * Next thing to look in is as you can see these key values, one thing to note is that
+     * usually 1 context is created per state domain example:
+     * 1 context for the post like: posts, onAddPost and onClearPosts
+     * 2nd context for only for search data which is searchQuery and setSearchQuery
+     * So we have created a PostContext therefore it should only be for the posting parts
+     * Then we could have also created a SearchContext where we would have placed those search data's
+     * Therefore that would have been a cleaner code, but here we are just learning how context works
+     * So that's not really a problem
      */
 
-    <PostContext.Provider>
+    <PostContext.Provider
+      value={{
+        posts: searchedPosts,
+        onAddPost: handleAddPost,
+        onClearPosts: handleClearPosts,
+        searchQuery, // remember having this -> searchQuery is same like searchQuery: searchQuery.
+        setSearchQuery,
+      }}
+    >
       <section>
         <button
           onClick={() => setIsFakeDark((isFakeDark) => !isFakeDark)}
