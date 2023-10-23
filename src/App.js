@@ -13,6 +13,9 @@ function createRandomPost() {
  * * There is a provider
  * * There is a value
  * * Then there are all the consumer components 📦 which will read the value from the context
+ *
+ * ? why Context api
+ * We can pass in data into nested components without having to pass in any props, So RIP 💀 to props drilling
  */
 
 /** STEP 1) CREATE A PROVIDER
