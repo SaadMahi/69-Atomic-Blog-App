@@ -8,33 +8,6 @@ function createRandomPost() {
   };
 }
 
-/** CONTEXT API
- * So context api's have three parts
- * * There is a provider
- * * There is a value
- * * Then there are all the consumer components 📦 which will read the value from the context
- *
- * ? why Context api
- * We can pass in data into nested components without having to pass in any props, So RIP 💀 to props drilling
- */
-
-/** STEP 1) CREATE A PROVIDER
- * for that we need to create a new context and to do that we create
- * createContext which is a function that is inlcuded in React just like useState or useEffect
- * now into this createContext function we can pass in default value but we usually don't pass in anything
- *
- * as that value won't change over time, therrefore it's use less to do that,
- * instead we usually pass in null or we just leave this empty which we are going to do that in this case
- *
- * Anyway's this createContext returns us a context let's call this context a PostContext in this case
- * as we will be storing in here about posts, a thing to notice here is the variable name is in pascal case
- * the reason to do that is that this PostContext is a component and we know components use uppercase letter
- * in the beginning
- *
- *
- */
-
-// STEP 1) here we have our context, now we need to use this, go below to find step 1 continuation
 const PostContext = createContext();
 
 function App() {
@@ -70,38 +43,13 @@ function App() {
     [isFakeDark]
   );
 
-  /** STEP 1) continuation... PASSING IN THE VALUE TO CONTEXT PROVIDER
-   * right here below in the jsx we can use this component
-   * so we will be making it parent component of all the jsx below this PostContext
-   * so PostContext. by using dot we use the Provider property on it
-   * next we close the whole code with this component <PostContext.Provider>  </PostContext.Provider>
-   */
-
   return (
-    /** STEP 2) PROVIDE VALUES TO THE CHILD COMPONENTS 📦
-     * To do that we specify value prop to the component
-     * Then within that we define an object
-     * So in here we need an object which will contain
-     * all the data that we want to make accessible to the child component
-     * which are similar to props and values we pass in but here
-     * it will be in key value pairs, that's the only difference
-     *
-     * Next thing to look in is as you can see these key values, one thing to note is that
-     * usually 1 context is created per state domain example:
-     * 1 context for the post like: posts, onAddPost and onClearPosts
-     * 2nd context for only for search data which is searchQuery and setSearchQuery
-     * So we have created a PostContext therefore it should only be for the posting parts
-     * Then we could have also created a SearchContext where we would have placed those search data's
-     * Therefore that would have been a cleaner code, but here we are just learning how context works
-     * So that's not really a problem
-     */
-
     <PostContext.Provider
       value={{
         posts: searchedPosts,
         onAddPost: handleAddPost,
         onClearPosts: handleClearPosts,
-        searchQuery, // remember having this -> searchQuery is same like searchQuery: searchQuery.
+        searchQuery,
         setSearchQuery,
       }}
     >
@@ -113,14 +61,7 @@ function App() {
           {isFakeDark ? '☀️' : '🌙'}
         </button>
 
-        <Header
-        // ! Let's remove these props and read(pass) in the values through context e created
-        // * Let's move on to the header section now
-        // posts={searchedPosts}
-        // onClearPosts={handleClearPosts}
-        // searchQuery={searchQuery}
-        // setSearchQuery={setSearchQuery}
-        />
+        <Header />
         <Main />
         <Archive />
         <Footer />
@@ -130,17 +71,6 @@ function App() {
 }
 
 function Header() {
-  /** STEP 3) USE CONTEXT HOOK TO CONSUME CONTEXT VALUE
-   * Here values are further passed by props to other components as you can see below those are:
-   * posts, searchQuery and setSearchQuery except the onClearPosts that we will be using
-   * with the help of useConext hook
-   *
-   * So ussContext hook comes into the picture
-   * Here we need to pass in the entire context object into this function which we made previously
-   * that is PostContext which will return's us the entire value which we passed into the context
-   * So what we can do is destrcuture it and take out the only part we need
-   */
-
   // * CONSUMING THE CONTEXT VALUE
   const { onClearPosts } = useContext(PostContext);
 
@@ -153,11 +83,6 @@ function Header() {
         <Results />
         <SearchPosts />
 
-        {/* <Results posts={posts} /> */}
-        {/* <SearchPosts
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-        /> */}
         <button onClick={onClearPosts}>Clear posts</button>
       </div>
     </header>
