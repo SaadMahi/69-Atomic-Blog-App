@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { faker } from '@faker-js/faker';
 
 function createRandomPost() {
@@ -8,33 +8,33 @@ function createRandomPost() {
   };
 }
 
+/** CONTEXT API
+ * So context api's have three parts
+ * * There is a provider
+ * * There is a value
+ * * Then there are all the consumer components 📦 which will read the value from the context
+ */
+
+/** STEP 1) CREATE A PROVIDER
+ * for that we need to create a new context and to do that we create
+ * createContext which is a function that is inlcuded in React just like useState or useEffect
+ * now into this createContext function we can pass in default value but we usually don't pass in anything
+ *
+ * as that value won't change over time, therrefore it's use less to do that,
+ * instead we usually pass in null or we just leave this empty which we are going to do that in this case
+ *
+ * Anyway's this createContext returns us a context let's call this context a PostContext in this case
+ * as we will be storing in here about posts, a thing to notice here is the variable name is in pascal case
+ * the reason to do that is that this PostContext is a component and we know components use uppercase letter
+ * in the beginning
+ *
+ *
+ */
+
+// STEP 1) here we have our context, now we need to use this, go below to find step 1 continuation
+const PostContext = createContext();
+
 function App() {
-  /** CONTEXT API
-   * So context api's have three parts
-   * * There is a provider
-   * * There is a value
-   * * Then there are all the consumer components 📦 which will read the value from the context
-   */
-
-  /** STEP 1) CREATE A PROVIDER
-   * for that we need to create a new context and to do that we create
-   * createContext which is a function that is inlcuded in React just like useState or useEffect
-   * now into this createContext function we can pass in default value but we usually don't pass in anything
-   *
-   * as that value won't change over time, therrefore it's use less to do that,
-   * instead we usually pass in null or we just leave this empty which we are going to do that in this case
-   *
-   * Anyway's this createContext returns us a context let's call this context a PostContext in this case
-   * as we will be storing in here about posts, a thing to notice here is the variable name is in pascal case
-   * the reason to do that is that this PostContext is a component and we know components use uppercase letter
-   * in the beginning
-   *
-   *
-   */
-
-  // STEP 1) here we have our context, now we need to use this, go below to find step 1 continuation
-  const PostContext = createContext();
-
   const [posts, setPosts] = useState(() =>
     Array.from({ length: 30 }, () => createRandomPost())
   );
@@ -111,10 +111,12 @@ function App() {
         </button>
 
         <Header
-          posts={searchedPosts}
-          onClearPosts={handleClearPosts}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
+        // ! Let's remove these props and read(pass) in the values through context e created
+        // * Let's move on to the header section now
+        // posts={searchedPosts}
+        // onClearPosts={handleClearPosts}
+        // searchQuery={searchQuery}
+        // setSearchQuery={setSearchQuery}
         />
         <Main posts={searchedPosts} onAddPost={handleAddPost} />
         <Archive onAddPost={handleAddPost} />
@@ -124,25 +126,45 @@ function App() {
   );
 }
 
-function Header({ posts, onClearPosts, searchQuery, setSearchQuery }) {
+function Header() {
+  /** STEP 3) USE CONTEXT HOOK TO CONSUME CONTEXT VALUE
+   * Here values are further passed by props to other components as you can see below those are:
+   * posts, searchQuery and setSearchQuery except the onClearPosts that we will be using
+   * with the help of useConext hook
+   *
+   * So ussContext hook comes into the picture
+   * Here we need to pass in the entire context object into this function which we made previously
+   * that is PostContext which will return's us the entire value which we passed into the context
+   * So what we can do is destrcuture it and take out the only part we need
+   */
+
+  // * CONSUMING THE CONTEXT VALUE
+  const { onClearPosts } = useContext(PostContext);
+
   return (
     <header>
       <h1>
         <span>⚛️</span>The Atomic Blog
       </h1>
       <div>
-        <Results posts={posts} />
-        <SearchPosts
+        <Results />
+        <SearchPosts />
+
+        {/* <Results posts={posts} /> */}
+        {/* <SearchPosts
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-        />
+        /> */}
         <button onClick={onClearPosts}>Clear posts</button>
       </div>
     </header>
   );
 }
 
-function SearchPosts({ searchQuery, setSearchQuery }) {
+function SearchPosts() {
+  // * CONSUMING THE CONTEXT VALUE
+  const { searchQuery, setSearchQuery } = useContext(PostContext);
+
   return (
     <input
       value={searchQuery}
@@ -152,7 +174,10 @@ function SearchPosts({ searchQuery, setSearchQuery }) {
   );
 }
 
-function Results({ posts }) {
+function Results() {
+  // * CONSUMING THE CONTEXT VALUE
+  const { posts } = useContext(PostContext);
+
   return <p>🚀 {posts.length} atomic posts found</p>;
 }
 
