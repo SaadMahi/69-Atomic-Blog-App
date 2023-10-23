@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { faker } from '@faker-js/faker';
 
 function createRandomPost() {
@@ -9,6 +9,32 @@ function createRandomPost() {
 }
 
 function App() {
+  /** CONTEXT API
+   * So context api's have three parts
+   * * There is a provider
+   * * There is a value
+   * * Then there are all the consumer components 📦 which will read the value from the context
+   */
+
+  /** STEP 1) CREATE A PROVIDER
+   * for that we need to create a new context and to do that we create
+   * createContext which is a function that is inlcuded in React just like useState or useEffect
+   * now into this createContext function we can pass in default value but we usually don't pass in anything
+   *
+   * as that value won't change over time, therrefore it's use less to do that,
+   * instead we usually pass in null or we just leave this empty which we are going to do that in this case
+   *
+   * Anyway's this createContext returns us a context let's call this context a PostContext in this case
+   * as we will be storing in here about posts, a thing to notice here is the variable name is in pascal case
+   * the reason to do that is that this PostContext is a component and we know components use uppercase letter
+   * in the beginning
+   *
+   *
+   */
+
+  // STEP 1) here we have our context, now we need to use this, go below to find step 1 continuation
+  const PostContext = createContext();
+
   const [posts, setPosts] = useState(() =>
     Array.from({ length: 30 }, () => createRandomPost())
   );
@@ -41,25 +67,41 @@ function App() {
     [isFakeDark]
   );
 
-  return (
-    <section>
-      <button
-        onClick={() => setIsFakeDark((isFakeDark) => !isFakeDark)}
-        className='btn-fake-dark-mode'
-      >
-        {isFakeDark ? '☀️' : '🌙'}
-      </button>
+  /** STEP 1) continuation... PASSING IN THE VALUE TO CONTEXT PROVIDER
+   * right here below in the jsx we can use this component
+   * so we will be making it parent component of all the jsx below this PostContext
+   * so PostContext. by using dot we use the Provider property on it
+   * next we close the whole code with this component <PostContext.Provider>  </PostContext.Provider>
+   */
 
-      <Header
-        posts={searchedPosts}
-        onClearPosts={handleClearPosts}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-      <Main posts={searchedPosts} onAddPost={handleAddPost} />
-      <Archive onAddPost={handleAddPost} />
-      <Footer />
-    </section>
+  return (
+    /** STEP 2) PROVIDE VALUES TO THE CHILD COMPONENTS 📦
+     * To do that we specify value prop to the component
+     * Then within that we define an object
+     * So we here we need an object which will contain
+     * all the data that we want to make accessible to the child component
+     */
+
+    <PostContext.Provider>
+      <section>
+        <button
+          onClick={() => setIsFakeDark((isFakeDark) => !isFakeDark)}
+          className='btn-fake-dark-mode'
+        >
+          {isFakeDark ? '☀️' : '🌙'}
+        </button>
+
+        <Header
+          posts={searchedPosts}
+          onClearPosts={handleClearPosts}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+        <Main posts={searchedPosts} onAddPost={handleAddPost} />
+        <Archive onAddPost={handleAddPost} />
+        <Footer />
+      </section>
+    </PostContext.Provider>
   );
 }
 
