@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { faker } from '@faker-js/faker';
 
 function createRandomPost() {
@@ -9,6 +9,32 @@ function createRandomPost() {
 }
 
 function App() {
+  /** CONTEXT API
+   * So context api's have three parts
+   * * There is a provider
+   * * There is a value
+   * * Then there are all the consumer components 📦 which will read the value from the context
+   */
+
+  /** STEP 1) CREATE A PROVIDER
+   * for that we need to create a new context and to do that we create
+   * createContext which is a function that is inlcuded in React just like useState or useEffect
+   * now into this createContext function we can pass in default value but we usually don't pass in anything
+   *
+   * as that value won't change over time, therrefore it's use less to do that,
+   * instead we usually pass in null or we just leave this empty which we are going to do that in this case
+   *
+   * Anyway's this createContext returns us a context let's call this context a PostContext in this case
+   * as we will be storing in here about posts, a thing to notice here is the variable name is in pascal case
+   * the reason to do that is that this PostContext is a component and we know components use uppercase letter
+   * in the beginning
+   *
+   *
+   */
+
+  // STEP 1) here we have our context, now we need to use this, go below to find step 1 continuation
+  const PostContext = createContext();
+
   const [posts, setPosts] = useState(() =>
     Array.from({ length: 30 }, () => createRandomPost())
   );
@@ -41,25 +67,60 @@ function App() {
     [isFakeDark]
   );
 
-  return (
-    <section>
-      <button
-        onClick={() => setIsFakeDark((isFakeDark) => !isFakeDark)}
-        className='btn-fake-dark-mode'
-      >
-        {isFakeDark ? '☀️' : '🌙'}
-      </button>
+  /** STEP 1) continuation... PASSING IN THE VALUE TO CONTEXT PROVIDER
+   * right here below in the jsx we can use this component
+   * so we will be making it parent component of all the jsx below this PostContext
+   * so PostContext. by using dot we use the Provider property on it
+   * next we close the whole code with this component <PostContext.Provider>  </PostContext.Provider>
+   */
 
-      <Header
-        posts={searchedPosts}
-        onClearPosts={handleClearPosts}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-      <Main posts={searchedPosts} onAddPost={handleAddPost} />
-      <Archive onAddPost={handleAddPost} />
-      <Footer />
-    </section>
+  return (
+    /** STEP 2) PROVIDE VALUES TO THE CHILD COMPONENTS 📦
+     * To do that we specify value prop to the component
+     * Then within that we define an object
+     * So in here we need an object which will contain
+     * all the data that we want to make accessible to the child component
+     * which are similar to props and values we pass in but here
+     * it will be in key value pairs, that's the only difference
+     *
+     * Next thing to look in is as you can see these key values, one thing to note is that
+     * usually 1 context is created per state domain example:
+     * 1 context for the post like: posts, onAddPost and onClearPosts
+     * 2nd context for only for search data which is searchQuery and setSearchQuery
+     * So we have created a PostContext therefore it should only be for the posting parts
+     * Then we could have also created a SearchContext where we would have placed those search data's
+     * Therefore that would have been a cleaner code, but here we are just learning how context works
+     * So that's not really a problem
+     */
+
+    <PostContext.Provider
+      value={{
+        posts: searchedPosts,
+        onAddPost: handleAddPost,
+        onClearPosts: handleClearPosts,
+        searchQuery, // remember having this -> searchQuery is same like searchQuery: searchQuery.
+        setSearchQuery,
+      }}
+    >
+      <section>
+        <button
+          onClick={() => setIsFakeDark((isFakeDark) => !isFakeDark)}
+          className='btn-fake-dark-mode'
+        >
+          {isFakeDark ? '☀️' : '🌙'}
+        </button>
+
+        <Header
+          posts={searchedPosts}
+          onClearPosts={handleClearPosts}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+        <Main posts={searchedPosts} onAddPost={handleAddPost} />
+        <Archive onAddPost={handleAddPost} />
+        <Footer />
+      </section>
+    </PostContext.Provider>
   );
 }
 
